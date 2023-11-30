@@ -7,8 +7,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
 import { Company } from './company/entities/company.entity';
+import { Leave } from './leave/entities/leave.entity';
+import { Bridge } from './bridge/entities/bridge.entity';
+import { CompanyLeave } from './company-leave/entities/company-leave.entity';
 import { CompanyModule } from './company/company.module';
 import { AuthModule } from './auth/auth.module';
+import { LeaveModule } from './leave/leave.module';
+import { BridgeModule } from './bridge/bridge.module';
+import { CompanyLeaveModule } from './company-leave/company-leave.module';
 
 @Module({
   imports: [
@@ -25,13 +31,21 @@ import { AuthModule } from './auth/auth.module';
         password: configService.get('DATABASE_PASSWORD'),
         synchronize: configService.get<boolean>('DATABASE_SYNC'),
         logging: configService.get<boolean>('DATABASE_LOGGING'),
-        // entities: [__dirname + '/**/*.entity{.ts, .js}'],
-        entities: { User, Company },
+        entities: {
+          User,
+          Company,
+          Leave,
+          Bridge,
+          CompanyLeave,
+        },
       }),
     }),
     UserModule,
     CompanyModule,
     AuthModule,
+    LeaveModule,
+    BridgeModule,
+    CompanyLeaveModule,
   ],
   controllers: [AppController],
   providers: [AppService],

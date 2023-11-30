@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
@@ -15,54 +15,53 @@ export class CompanyService {
   ) {}
 
   async create(createCompanyDto: CreateCompanyDto, userId: number) {
-    let company: Company = new Company();
-    company.name = createCompanyDto.name;
-    company.category = createCompanyDto.category;
-    company.user = await this.userService.findUserByID(userId);
-    const create = await this.companyRepository.save(company);
-    return { message: 'company created', status: 'success', data: { create } };
-    // return 'company created';
+    try {
+      let company: Company = new Company();
+      company.name = createCompanyDto.name;
+      company.category = createCompanyDto.category;
+      company.user = await this.userService.findUserByID(userId);
+      const create = await this.companyRepository.save(company);
+      return {
+        message: 'Company created',
+        status: 'success',
+        data: { create },
+      };
+    } catch (error) {
+      console.error('Error creating company:', error);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  // async create(
-  //   createCompanyDto: CreateCompanyDto,
-  //   userId: number,
-  // ): Promise<Company> {
-  //   const newCompany = new Company();
-  //   newCompany.name = createCompanyDto.name;
-  //   newCompany.category = createCompanyDto.category;
-  //   // newCompany.image = createCompanyDto.image;
-  //   newCompany.user = await this.userService.findUserByID(userId);
+  async getCompanyByUserId(userId: number): Promise<number | undefined> {
+    const company = await this.companyRepository
+      .createQueryBuilder('company')
+      .where('company.userId = :userId', { userId })
+      .getOne();
 
-  //   const createdCompany = await this.companyRepository.save(newCompany);
-  //   return createdCompany;
-  //   // return 'This action adds a new company';
-  // }
+    if (company) {
+      return company.id;
+    }
 
-  // async createCompany(
-  //   createCompanyDto: CreateCompanyDto,
-  //   image: Buffer,
-  // ): Promise<Company> {
-  //   // Create a new 'Company' entity and populate it with data from the DTO
-  //   const newCompany = new Company();
-  //   newCompany.name = createCompanyDto.name;
-  //   newCompany.category = createCompanyDto.category;
-
-  //   // Set the image data
-  //   // newCompany.image = image;
-
-  //   // Save the new company to the database
-  //   const createdCompany = await this.companyRepository.save(newCompany);
-
-  //   return createdCompany;
-  // }
+    return undefined; // Return undefined if no matching company is found
+  }
 
   findAll() {
     return `This action returns all company`;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} company`;
+    return this.companyRepository.findOne({ where: { id } });
+  }
+
+  // findcompanyByID(id: number) {
+  //   return this.companyRepository.findOne({ where: { id } });
+  // }
+
+  findCompanyByID(id: number) {
+    return this.companyRepository.findOneOrFail({ where: { id: id } });
   }
 
   update(id: number, updateCompanyDto: UpdateCompanyDto) {
@@ -71,5 +70,19 @@ export class CompanyService {
 
   remove(id: number) {
     return `This action removes a #${id} company`;
+  }
+
+  async getCompanyIdByUserId(userId: number): Promise<number | undefined> {
+    const company = await this.companyRepository
+      .createQueryBuilder('company')
+      .where('company.user.id = :userId', { userId })
+      .select('company.id', 'id')
+      .getRawOne();
+
+    if (company) {
+      return company.id;
+    }
+
+    return undefined; // Return undefined if no matching company is found
   }
 }

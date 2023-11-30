@@ -6,9 +6,8 @@ import { CompanyController } from './company.controller';
 import * as multer from 'multer';
 import { Company } from './entities/company.entity';
 import { UserModule } from 'src/user/user.module';
-
+import { EmailService } from './email.service';
 @Module({
-  exports: [TypeOrmModule.forFeature([Company]), UserModule],
   imports: [
     UserModule,
     TypeOrmModule.forFeature([Company]),
@@ -17,6 +16,7 @@ import { UserModule } from 'src/user/user.module';
     }),
   ],
   controllers: [CompanyController],
-  providers: [CompanyService],
+  providers: [CompanyService, EmailService],
+  exports: [TypeOrmModule.forFeature([Company]), CompanyService],
 })
 export class CompanyModule {}

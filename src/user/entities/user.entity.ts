@@ -1,14 +1,15 @@
-import { Company } from 'src/company/entities/company.entity';
 import {
-  Column,
   Entity,
-  OneToMany,
+  Column,
   PrimaryGeneratedColumn,
-  Unique,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
 } from 'typeorm';
+import { Company } from 'src/company/entities/company.entity';
+import { Leave } from 'src/leave/entities/leave.entity';
 
 @Entity()
-@Unique(['email'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -28,6 +29,18 @@ export class User {
   @Column()
   role: string;
 
+  @Column()
+  status: string;
+
+  @Column({ nullable: true })
+  resetKey: string;
+
   @OneToMany(() => Company, (company) => company.user)
   company: Company[];
+
+  @ManyToMany(() => Company)
+  companies: Company[];
+
+  @OneToMany(() => Leave, (leave) => leave.user)
+  leave: Leave[];
 }

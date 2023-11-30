@@ -1,5 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 export class Company {
@@ -11,12 +17,6 @@ export class Company {
 
   @Column()
   category: string;
-
-  // @Column()
-  // image: string;
-
-  // @Column({ type: 'bytea', nullable: true })
-  // image: Buffer;
 
   @ManyToOne(() => User, (user) => user.company)
   user: User;

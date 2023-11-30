@@ -4,19 +4,32 @@
 // export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
 import { Exclude, Expose } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 @Exclude()
 export class UpdateUserDto {
+  @IsOptional()
   @IsString()
   @Expose()
   firstName: string;
 
+  @IsOptional()
   @IsString()
   @Expose()
   lastName: string;
 
+  @IsOptional()
   @IsString()
   @Expose()
   password: string;
+
+  @IsOptional()
+  @IsString()
+  @Expose()
+  status: string;
+
+  @IsOptional()
+  @IsString()
+  @Expose()
+  resetKey: string;
 }

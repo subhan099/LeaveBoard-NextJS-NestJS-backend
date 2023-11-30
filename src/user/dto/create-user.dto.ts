@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, ValidateIf, IsOptional } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -8,6 +8,8 @@ export class CreateUserDto {
   lastName: string;
 
   @IsEmail()
+  // @ValidateIf((object, value) => !value)
+  @IsOptional()
   email: string;
 
   @IsString()
